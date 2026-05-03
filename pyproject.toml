@@ -1,0 +1,21 @@
+[build-system]  
+requires = ["setuptools>=42"]  
+build-backend = "setuptools.build_meta"  
+
+[tool.black]  
+line-length = 88  
+
+[tool.ruff]  
+line-length = 88  
+
+[tool.mypy]  
+files = ["src"]  
+
+[tool.pytest]  
+addopts = "--maxfail=1 --disable-warnings -q"  
+
+[project]  
+name = "SafeCityAI"  
+version = "0.1.0"  
+description = "A description of the SafeCityAI project"  
+author = "Your Name"  
