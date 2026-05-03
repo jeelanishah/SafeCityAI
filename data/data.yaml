@@ -1,0 +1,10 @@
+path: /app/data/processed
+train: train/images
+val: val/images
+test: test/images
+
+nc: 3
+names:
+  0: Helmet
+  1: No_Helmet
+  2: License_Plate
