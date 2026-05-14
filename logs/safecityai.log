@@ -1,0 +1,45 @@
+2026-05-03 13:00:01 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-03 13:00:01 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-03 13:00:01 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-03 13:08:38 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 10:20:33 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 10:20:33 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 10:20:33 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 10:21:55 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 11:06:27 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 11:06:27 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 11:06:27 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 11:08:27 | WARNING  | api.dependencies:get_model:35 - Could not load model: unpickling stack underflow
+2026-05-04 11:08:27 | INFO     | api.middleware:logging_middleware:18 - GET /health - Status: 200 - Time: 5.0622s
+2026-05-04 11:15:38 | INFO     | src.inference:__init__:34 - Model loaded from models\weights\best.pt on device cpu
+2026-05-04 11:15:38 | INFO     | api.dependencies:get_model:33 - Model loaded successfully
+2026-05-04 11:15:38 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 200 - Time: 0.5365s
+2026-05-04 11:17:05 | ERROR    | api.server:predict:157 - Prediction failed: 1 validation error for DetectionBox
+class_id
+  Field required [type=missing, input_value={'bbox': array([ 34, 119,... 2, 'class_name': 'car'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+2026-05-04 11:17:05 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 500 - Time: 0.2046s
+2026-05-04 11:18:10 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 11:18:15 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 11:18:15 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 11:18:15 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 11:18:24 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 11:18:28 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 11:18:28 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 11:18:28 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 11:18:52 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 11:19:03 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 11:19:03 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 11:19:03 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 11:19:13 | INFO     | src.inference:__init__:32 - Model loaded: models\weights\best.pt
+2026-05-04 11:19:13 | INFO     | api.dependencies:get_model:33 - Model loaded successfully
+2026-05-04 11:19:14 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 200 - Time: 3.1701s
+2026-05-04 11:21:00 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 422 - Time: 0.0102s
+2026-05-04 12:08:56 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 200 - Time: 0.1817s
+2026-05-04 12:22:41 | INFO     | api.server:shutdown_event:62 - SafeCityAI API shutting down
+2026-05-04 12:22:57 | INFO     | api.server:startup_event:55 - SafeCityAI API v1.0.0 starting
+2026-05-04 12:22:57 | INFO     | api.server:startup_event:56 - Environment: development
+2026-05-04 12:22:57 | INFO     | api.server:startup_event:57 - Device: cpu
+2026-05-04 12:23:21 | INFO     | src.inference:__init__:32 - Model loaded: models\weights\best.pt
+2026-05-04 12:23:21 | INFO     | api.dependencies:get_model:33 - Model loaded successfully
+2026-05-04 12:23:21 | INFO     | api.middleware:logging_middleware:18 - POST /predict - Status: 200 - Time: 2.3386s

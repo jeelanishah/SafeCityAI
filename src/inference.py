@@ -1,126 +1,74 @@
-"""Model inference and prediction pipeline."""
+"""Model inference engine."""
 
+import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Any, Optional
 
 import cv2
 import numpy as np
-import torch
 from loguru import logger
-from ultralytics import YOLO
 
-from src.visualizer import draw_detections
-
-__all__ = ["ModelInference", "load_model"]
+__all__ = ["ModelInference"]
 
 
 class ModelInference:
-    """YOLOv5 model inference wrapper."""
+    """YOLO inference wrapper."""
     
-    def __init__(self, model_path: Path, device: str = "auto", conf: float = 0.5):
-        """
-        Initialize inference engine.
-        
-        Args:
-            model_path: Path to model weights (.pt file)
-            device: Device to use ('cuda', 'cpu', 'auto')
-            conf: Confidence threshold
-        """
+    def __init__(
+        self,
+        model_path: Path,
+        device: str = "cpu",
+        conf: float = 0.5,
+    ):
+        """Initialize inference engine."""
         self.model_path = Path(model_path)
         self.device = device
         self.conf = conf
-        self.model = None
-        self._load_model()
-        logger.info(f"Model loaded from {model_path} on device {device}")
-    
-    def _load_model(self) -> None:
-        """Load YOLO model."""
-        if not self.model_path.exists():
-            raise FileNotFoundError(f"Model not found: {self.model_path}")
         
-        self.model = YOLO(str(self.model_path))
-        self.model.to(self.device)
+        try:
+            from ultralytics import YOLO
+            self.model = YOLO(str(self.model_path))
+            self.model.to(device)
+            logger.info(f"Model loaded: {self.model_path}")
+        except Exception as e:
+            logger.error(f"Failed to load model: {e}")
+            raise
     
     def predict(
         self,
-        image: Union[np.ndarray, str, Path],
+        image: np.ndarray,
         conf: Optional[float] = None,
-        iou: float = 0.45,
-    ) -> Dict:
-        """
-        Run inference on single image.
+    ) -> Dict[str, Any]:
+        """Run inference on image."""
+        conf = conf or self.conf
         
-        Args:
-            image: Image array, file path, or URL
-            conf: Confidence threshold (uses self.conf if None)
-            iou: IOU threshold for NMS
+        try:
+            # Run inference
+            results = self.model(image, conf=conf, verbose=False)
             
-        Returns:
-            Dict with 'detections', 'image', 'metadata'
-        """
-        if conf is None:
-            conf = self.conf
-        
-        results = self.model.predict(image, conf=conf, iou=iou, device=self.device)
-        
-        detections = []
-        for result in results:
-            if result.boxes is not None:
-                for box in result.boxes:
-                    det = {
-                        'bbox': box.xyxy[0].cpu().numpy().astype(int),
-                        'confidence': float(box.conf[0]),
-                        'class': int(box.cls[0]),
-                        'class_name': self.model.names[int(box.cls[0])],
-                    }
-                    detections.append(det)
-        
-        return {
-            'detections': detections,
-            'image': results[0].orig_img,
-            'metadata': {
-                'model': str(self.model_path),
-                'conf': conf,
-                'device': self.device,
+            detections = []
+            if results and len(results) > 0:
+                result = results[0]
+                
+                if result.boxes is not None:
+                    for box in result.boxes:
+                        # Extract coordinates
+                        bbox = box.xyxy[0].cpu().numpy().tolist()  # [x1, y1, x2, y2]
+                        conf_score = float(box.conf[0].cpu().numpy())
+                        class_id = int(box.cls[0].cpu().numpy())
+                        class_name = result.names[class_id]
+                        
+                        detections.append({
+                            "bbox": bbox,
+                            "confidence": conf_score,
+                            "class_id": class_id,
+                            "class_name": class_name,
+                        })
+            
+            return {
+                "detections": detections,
+                "success": True,
             }
-        }
-    
-    def predict_batch(
-        self,
-        images: List[Union[str, Path, np.ndarray]],
-        conf: Optional[float] = None,
-    ) -> List[Dict]:
-        """
-        Run inference on multiple images.
-        
-        Args:
-            images: List of image paths or arrays
-            conf: Confidence threshold
-            
-        Returns:
-            List of prediction dicts
-        """
-        results = []
-        for img in images:
-            try:
-                result = self.predict(img, conf=conf)
-                results.append(result)
-            except Exception as e:
-                logger.error(f"Error processing image: {e}")
-                results.append({'error': str(e)})
-        
-        return results
-
-
-def load_model(model_path: Path, device: str = "auto") -> ModelInference:
-    """
-    Load and return inference engine.
-    
-    Args:
-        model_path: Path to model weights
-        device: Device to use
-        
-    Returns:
-        ModelInference instance
-    """
-    return ModelInference(model_path, device)
+        except Exception as e:
+            logger.error(f"Inference failed: {e}")
+            raise

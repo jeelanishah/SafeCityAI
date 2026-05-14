@@ -1,42 +1,41 @@
-"""Request and response schemas."""
+"""Pydantic schemas for request/response validation."""
 
-from typing import Dict, List, Optional
-
+from typing import List, Optional, Tuple
 from pydantic import BaseModel, Field
 
-__all__ = ["DetectionBox", "DetectionResponse", "InferenceRequest", "HealthResponse"]
+__all__ = [
+    "DetectionBox",
+    "DetectionResponse",
+    "HealthResponse",
+]
 
 
 class DetectionBox(BaseModel):
     """Single detection box."""
     
-    bbox: List[int] = Field(..., description="[x1, y1, x2, y2]")
-    confidence: float = Field(..., description="Confidence score 0-1", ge=0, le=1)
-    class_id: int = Field(..., description="Class ID")
+    bbox: List[float] = Field(..., description="[x1, y1, x2, y2] coordinates")
+    confidence: float = Field(..., ge=0, le=1, description="Detection confidence")
+    class_id: Optional[int] = Field(default=0, description="Class ID")
     class_name: str = Field(..., description="Class name")
+    
+    class Config:
+        """Allow arbitrary types."""
+        arbitrary_types_allowed = True
 
 
 class DetectionResponse(BaseModel):
-    """Detection response."""
+    """API response for detection."""
     
-    detections: List[DetectionBox]
+    detections: List[DetectionBox] = Field(default_factory=list)
     inference_time: float = Field(..., description="Inference time in seconds")
-    image_size: tuple = Field(..., description="(height, width)")
-    model_version: str = Field(..., description="Model version used")
-
-
-class InferenceRequest(BaseModel):
-    """Inference request."""
-    
-    image_base64: Optional[str] = None
-    image_url: Optional[str] = None
-    confidence_threshold: float = Field(default=0.5, ge=0, le=1)
+    image_size: Tuple[int, int] = Field(..., description="Image dimensions (height, width)")
+    model_version: str = Field(default="1.0.0")
 
 
 class HealthResponse(BaseModel):
     """Health check response."""
     
-    status: str = Field(..., description="'healthy' or 'unhealthy'")
-    model_loaded: bool
-    device: str
-    gpu_available: bool
+    status: str = Field(default="healthy")
+    model_loaded: bool = Field(...)
+    device: str = Field(...)
+    gpu_available: bool = Field(...)
