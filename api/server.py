@@ -1,5 +1,6 @@
 import tempfile
 import uuid
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +17,20 @@ except Exception:  # pragma: no cover
     cv2 = None
 
 
-app = FastAPI(title="SafeCityAI Helmet Detection API")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    global detector
+    logger.info("Initializing SafeCityDetector...")
+    detector = SafeCityDetector(
+        model_path=settings.model_path,
+        confidence_threshold=settings.confidence_threshold,
+        image_size=settings.image_size,
+    )
+    logger.info("SafeCityDetector initialized")
+    yield
+
+
+app = FastAPI(title="SafeCityAI Helmet Detection API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins or ["*"],
@@ -48,19 +62,6 @@ def _build_response(detections: list[dict[str, Any]], violations: list[dict[str,
         "detections": detections,
         "violations": violations,
     }
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    global detector
-    logger.info("Initializing SafeCityDetector...")
-    detector = SafeCityDetector(
-        model_path=settings.model_path,
-        confidence_threshold=settings.confidence_threshold,
-        image_size=settings.image_size,
-    )
-    logger.info("SafeCityDetector initialized")
-
 
 @app.get("/health")
 async def health() -> dict[str, str]:
@@ -126,7 +127,7 @@ async def upload_video(file: UploadFile = File(...)) -> dict[str, Any]:
         frame_index = 0
         processed_frames = 0
 
-        while capture.isOpened() and processed_frames < settings.max_video_frames:
+        while processed_frames < settings.max_video_frames and capture.isOpened():
             success, frame = capture.read()
             if not success:
                 break

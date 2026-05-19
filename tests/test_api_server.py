@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from api import server
@@ -56,7 +57,7 @@ def test_results_lookup() -> None:
     assert missing.status_code == 404
 
 
-def test_upload_video_and_cache(monkeypatch) -> None:
+def test_upload_video_and_cache(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeCapture:
         def __init__(self) -> None:
             self._frames = [object(), object()]
@@ -64,7 +65,7 @@ def test_upload_video_and_cache(monkeypatch) -> None:
         def isOpened(self) -> bool:
             return True
 
-        def read(self):
+        def read(self) -> tuple[bool, object | None]:
             if self._frames:
                 return True, self._frames.pop(0)
             return False, None
