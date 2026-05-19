@@ -63,10 +63,11 @@ def _build_response(detections: list[dict[str, Any]], violations: list[dict[str,
         "violations": violations,
     }
 
+
 @app.get("/health")
 async def health() -> dict[str, str]:
     logger.info("Health check requested")
-    return {"status": "ok"}
+    return {"status": "ok", "detector_ready": detector is not None}
 
 
 @app.get("/model-info")
@@ -75,10 +76,11 @@ async def model_info() -> dict[str, Any]:
         raise HTTPException(status_code=503, detail="Model not initialized")
     logger.info("Model info requested")
     return {
-        "model_path": settings.model_path,
-        "confidence_threshold": settings.confidence_threshold,
-        "image_size": settings.image_size,
-        "class_names": getattr(detector, "class_names", []),
+        "model_path": str(settings.model_path),
+        "confidence_threshold": float(settings.confidence_threshold),
+        "image_size": int(settings.image_size),
+        "class_names": detector.class_names,
+        "detector_initialized": True,
     }
 
 
