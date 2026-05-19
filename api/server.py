@@ -66,12 +66,14 @@ def _build_response(detections: list[dict[str, Any]], violations: list[dict[str,
 
 @app.get("/health")
 async def health() -> dict[str, str]:
+    """Health check endpoint"""
     logger.info("Health check requested")
     return {"status": "ok", "detector_ready": detector is not None}
 
 
 @app.get("/model-info")
 async def model_info() -> dict[str, Any]:
+    """Get model information"""
     if detector is None:
         raise HTTPException(status_code=503, detail="Model not initialized")
     logger.info("Model info requested")
@@ -95,6 +97,7 @@ async def _write_upload_to_temp(upload: UploadFile, suffix: str = "") -> Path:
 
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)) -> dict[str, Any]:
+    """Detect helmets in an image"""
     if detector is None:
         raise HTTPException(status_code=503, detail="Model not initialized")
     if not file.filename:
@@ -112,6 +115,7 @@ async def detect(file: UploadFile = File(...)) -> dict[str, Any]:
 
 @app.post("/upload-video")
 async def upload_video(file: UploadFile = File(...)) -> dict[str, Any]:
+    """Process video and detect helmets"""
     if detector is None:
         raise HTTPException(status_code=503, detail="Model not initialized")
     if not file.filename:
@@ -164,6 +168,7 @@ async def upload_video(file: UploadFile = File(...)) -> dict[str, Any]:
 
 @app.get("/results/{job_id}")
 async def get_results(job_id: str) -> dict[str, Any]:
+    """Get processing results by job ID"""
     logger.info("Result retrieval requested for job_id={}", job_id)
     result = results_cache.get(job_id)
     if result is None:
