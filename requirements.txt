@@ -325,7 +325,7 @@ ruamel.yaml.clib @ file:///C:/miniconda3/conda-bld/ruamel.yaml.clib_176253009451
 ruamel_yaml_conda @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/ruamel_yaml_1729063591675/work
 ruff @ file:///C:/b/abs_6dm5slwq6g/croot/ruff_1750775626108/work
 s3fs @ file:///C:/miniconda3/conda-bld/s3fs_1763105924370/work
--e git+https://github.com/jeelanishah/SafeCityAI.git@1ae71ea0fc1b4ea9755fc29e11aa5f48f9ef2453#egg=safecityai
+-e git+https://github.com/jeelanishah/SafeCityAI.git@afeb09cda027a538ed86d6ffcd82b4a144a21be9#egg=safecityai
 scikit-image @ file:///C:/b/abs_10rg9ps1jh/croot/scikit-image_1750419495144/work
 scikit-learn @ file:///C:/miniconda3/conda-bld/scikit-learn_1764838217219/work
 scipy @ file:///C:/miniconda3/conda-bld/scipy_1762194988805/work/dist/scipy-1.16.3-cp313-cp313-win_amd64.whl#sha256=3cec51386c90cf8f9f27291f357385537f0c33b68c680a306702b0829fc58fc2
