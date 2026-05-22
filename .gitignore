@@ -21,12 +21,10 @@ build/
 *.log
 *.db
 *.sqlite
-
 *.pth
 *.zip
 *.mp4
 datasets/
 runs/
-*.pt
 venv/
 __pycache__/
