@@ -35,7 +35,7 @@ app.add_middleware(
 )
 
 # =====================================================
-# BASE PATHS
+# PATHS
 # =====================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,10 +46,7 @@ STATIC_DIR = BASE_DIR / "static"
 UPLOAD_DIR = BASE_DIR / "uploads"
 OUTPUT_DIR = BASE_DIR / "outputs"
 
-# =====================================================
-# CREATE FOLDERS
-# =====================================================
-
+# Create folders automatically
 STATIC_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -69,7 +66,7 @@ if MODELS_FOLDER.exists():
     print("FILES INSIDE models/:")
     print(os.listdir(MODELS_FOLDER))
 else:
-    print("❌ models folder NOT found")
+    print("models folder NOT found")
 
 print("===================================")
 
@@ -94,11 +91,11 @@ try:
 
     model = YOLO(str(MODEL_PATH))
 
-    print("✅ YOLO Model Loaded Successfully")
+    print("✅ Model Loaded Successfully")
 
 except Exception as e:
 
-    print("❌ YOLO Model Loading Failed")
+    print("❌ Model Loading Failed")
     print(e)
 
 # =====================================================
@@ -116,7 +113,7 @@ async def home():
 
     if not index_file.exists():
         return {
-            "message": "SafeCityAI API is running successfully"
+            "message": "SafeCityAI API running successfully"
         }
 
     return FileResponse(str(index_file))
@@ -150,19 +147,13 @@ async def predict(file: UploadFile = File(...)):
 
     try:
 
-        # =============================================
-        # SAVE INPUT IMAGE
-        # =============================================
-
+        # Save uploaded image
         file_path = UPLOAD_DIR / file.filename
 
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # =============================================
-        # READ IMAGE
-        # =============================================
-
+        # Read image
         image = cv2.imread(str(file_path))
 
         if image is None:
@@ -171,10 +162,10 @@ async def predict(file: UploadFile = File(...)):
                 detail="Invalid image file"
             )
 
-        # =============================================
-        # YOLO PREDICTION
-        # =============================================
+        # Convert image to numpy array
+        image = np.array(image)
 
+        # YOLO prediction
         results = model.predict(
             source=image,
             conf=0.5,
@@ -185,10 +176,6 @@ async def predict(file: UploadFile = File(...)):
 
         helmets = 0
         violations = 0
-
-        # =============================================
-        # PROCESS RESULTS
-        # =============================================
 
         for result in results:
 
@@ -222,12 +209,62 @@ async def predict(file: UploadFile = File(...)):
                     "is_violation": is_violation
                 })
 
-        # =============================================
-        # SAVE OUTPUT IMAGE
-        # =============================================
-
+        # Save annotated image
         annotated = results[0].plot()
 
         output_filename = f"detected_{file.filename}"
 
         output_path = OUTPUT_DIR / output_filename
+
+        cv2.imwrite(str(output_path), annotated)
+
+        return {
+            "status": "success",
+            "filename": file.filename,
+            "total_detections": len(detections),
+            "helmets": helmets,
+            "violations": violations,
+            "detections": detections,
+            "output_image_url": f"/output/{output_filename}"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+# =====================================================
+# SERVE OUTPUT IMAGE
+# =====================================================
+
+@app.get("/output/{filename}")
+async def get_output_image(filename: str):
+
+    file_path = OUTPUT_DIR / filename
+
+    if not file_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Image not found"
+        )
+
+    return FileResponse(str(file_path))
+
+# =====================================================
+# MAIN
+# =====================================================
+
+if __name__ == "__main__":
+
+    PORT = int(os.environ.get("PORT", 10000))
+
+    uvicorn.run(
+        "api.server:app",
+        host="0.0.0.0",
+        port=PORT
+    )
