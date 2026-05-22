@@ -1,0 +1,184 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safecityai"
+version = "1.0.0"
+description = "AI-powered traffic violation detection for smart cities"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Abdul Khader Jeelani Fayaz", email = "jeelanishah@example.com"}]
+keywords = ["yolo", "helmet-detection", "traffic-violations", "computer-vision"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "ultralytics>=8.0.0",
+    "numpy>=1.24.0",
+    "opencv-python-headless>=4.8.0",
+    "Pillow>=10.0.0",
+    "scikit-image>=0.21.0",
+    "scikit-learn>=1.3.0",
+    "fastapi>=0.103.0",
+    "uvicorn[standard]>=0.23.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+    "tqdm>=4.66.0",
+    "pandas>=2.0.0",
+    "albumentations>=1.3.0",
+    "roboflow>=1.1.0",
+    "slowapi>=0.1.9",
+    "prometheus-fastapi-instrumentator>=0.23.0",
+    "requests>=2.31.0",
+    "click>=8.1.0",
+    "typing-extensions>=4.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-mock>=3.11.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.4.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.17.0",
+    "ipywidgets>=8.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/SafeCityAI"
+Documentation = "https://github.com/yourusername/SafeCityAI#readme"
+Repository = "https://github.com/yourusername/SafeCityAI.git"
+Issues = "https://github.com/yourusername/SafeCityAI/issues"
+
+[tool.setuptools]
+packages = ["src", "api", "tests"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | notebooks
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "UP",    # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (black handles this)
+    "W505",  # doc line too long
+]
+exclude = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "notebooks",
+]
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["F841"]
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "ultralytics.*",
+    "cv2.*",
+    "roboflow.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "--strict-markers",
+    "--tb=short",
+    "--cov=src",
+    "--cov=api",
+    "--cov-fail-under=32",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml",
+]
+markers = [
+    "integration: marks tests as integration (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/site-packages/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if sys.version_info",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

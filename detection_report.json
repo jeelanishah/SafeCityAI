@@ -1,0 +1,11 @@
+{
+  "video": "traffic video dataset.mp4",
+  "total_frames": 547,
+  "total_detections": 6633,
+  "helmets": 171,
+  "violations": 6462,
+  "processing_time_seconds": 70.27392983436584,
+  "inference_fps": 7.783825399963647,
+  "model": "yolov5su.pt",
+  "confidence": 0.5
+}

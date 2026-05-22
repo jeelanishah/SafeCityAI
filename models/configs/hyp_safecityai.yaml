@@ -1,0 +1,42 @@
+# YOLOv5 Hyperparameters
+
+# Learning rate
+lr0: 0.01
+lrf: 0.1
+
+# Momentum
+momentum: 0.937
+
+# Weight decay
+weight_decay: 0.0005
+
+# Batch size
+batch_size: 32
+
+# Image size
+imgsz: 640
+
+# Epochs
+epochs: 100
+
+# Patience for early stopping
+patience: 20
+
+# Warmup epochs
+warmup_epochs: 3
+
+# Augmentation
+degrees: 10
+translate: 0.1
+scale: 0.5
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.0
+
+# Regularization
+dropout: 0.0
+
+# NMS
+iou_threshold: 0.45
+conf_threshold: 0.55

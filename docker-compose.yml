@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  safecityai:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=False
+      - DEVICE=cpu
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    restart: unless-stopped

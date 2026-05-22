@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>SafeCityAI</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            text-align:center;
+            padding:40px;
+            background:#f4f4f4;
+        }
+
+        .container{
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            max-width:700px;
+            margin:auto;
+        }
+
+        button{
+            padding:10px 20px;
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        img{
+            margin-top:20px;
+            max-width:100%;
+        }
+
+        #result{
+            margin-top:20px;
+            text-align:left;
+            background:#eee;
+            padding:15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🚦 SafeCityAI</h1>
+
+    <p>Helmet Detection AI System</p>
+
+    <input type="file" id="imageInput">
+
+    <br><br>
+
+    <button onclick="uploadImage()">
+        Detect
+    </button>
+
+    <br>
+
+    <img id="preview">
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+async function uploadImage(){
+
+    const file =
+        document.getElementById("imageInput").files[0];
+
+    if(!file){
+
+        alert("Select image");
+
+        return;
+    }
+
+    document.getElementById("preview").src =
+        URL.createObjectURL(file);
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    document.getElementById("result").innerHTML =
+        "Processing...";
+
+    try{
+
+        const response = await fetch(
+            "/predict",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        const data = await response.json();
+
+        let html = `
+            <h3>Results</h3>
+            <p>Total Detections:
+            ${data.total_detections}</p>
+
+            <p>Helmets:
+            ${data.helmets}</p>
+
+            <p>Violations:
+            ${data.violations}</p>
+
+            <hr>
+        `;
+
+        data.detections.forEach(d => {
+
+            html += `
+                <p>
+                    ${d.class_name}
+                    |
+                    Confidence:
+                    ${d.confidence}
+                </p>
+            `;
+        });
+
+        document.getElementById("result").innerHTML =
+            html;
+
+    }catch(error){
+
+        console.log(error);
+
+        document.getElementById("result").innerHTML =
+            "Error";
+    }
+}
+
+</script>
+
+</body>
+
+</html>
